@@ -1,0 +1,67 @@
+[
+    {
+        "response": {
+            "ok": true,
+            "result": [
+                {
+                    "update_id": 879999771,
+                    "message": {
+                        "message_id": 8290,
+                        "from": {
+                            "id": 529068628,
+                            "is_bot": false,
+                            "first_name": "Carlo",
+                            "last_name": "Phalcone",
+                            "username": "carlo_phalcon",
+                            "language_code": "ru"
+                        },
+                        "chat": {
+                            "id": -1003807797608,
+                            "title": "Посоны на апщении",
+                            "type": "supergroup"
+                        },
+                        "date": 1791140387,
+                        "text": "@MyfirstCarlotest_bot хе-хе",
+                        "entities": [
+                            {
+                                "offset": 0,
+                                "length": 21,
+                                "type": "mention"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "type": "response"
+    },
+    {
+        "response": {
+            "ok": true,
+            "result": [
+                {
+                    "update_id": 879999770,
+                    "message": {
+                        "message_id": 8289,
+                        "from": {
+                            "id": 529068628,
+                            "is_bot": false,
+                            "first_name": "Carlo",
+                            "last_name": "Phalcone",
+                            "username": "carlo_phalcon",
+                            "language_code": "ru"
+                        },
+                        "chat": {
+                            "id": -1003807797608,
+                            "title": "Посоны на апщении",
+                            "type": "supergroup"
+                        },
+                        "date": 1791140256,
+                        "text": "Завтра опять колесо клеить ?"
+                    }
+                }
+            ]
+        },
+        "type": "response"
+    }
+]
