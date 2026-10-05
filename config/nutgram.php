@@ -7,6 +7,11 @@ return [
     // if the webhook mode must validate the incoming IP range is from a telegram server
     'safe_mode' => env('APP_ENV', 'local') === 'production',
 
+    // Секрет, который Telegram присылает в заголовке X-Telegram-Bot-Api-Secret-Token.
+    // Должен совпадать с secret_token, переданным в setWebhook; команда nutgram:hook:set
+    // в safe_mode использует md5(APP_KEY) — это и есть значение по умолчанию.
+    'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET') ?: md5((string) env('APP_KEY')),
+
     // Extra or specific configurations
     'config' => [],
 
