@@ -2,12 +2,21 @@
 
 namespace App\Providers;
 
+use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
+use App\Infrastructure\Repository\Postgress\Telegram\TelegramChannels\TelegramChannelsRepository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Реализации доменных портов: домен знает только интерфейс, инфраструктуру подставляем здесь.
+     */
+    public array $bindings = [
+        TelegramChannelsRepositoryInterface::class => TelegramChannelsRepository::class,
+    ];
+
     /**
      * Register any application services.
      */
