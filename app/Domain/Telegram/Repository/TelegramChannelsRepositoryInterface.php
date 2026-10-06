@@ -14,4 +14,6 @@ interface TelegramChannelsRepositoryInterface
     public function save(TelegramChannels $channel): TelegramChannels;
 
     public function findByChatId(int $chatId): ?TelegramChannels;
+
+    public function findById(int $id): ?TelegramChannels;
 }

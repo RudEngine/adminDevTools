@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Domain\Telegram\Cache\TelegramChannelsCacheInterface;
+use App\Domain\Telegram\Gateway\TelegramMessageSenderInterface;
 use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelCacheObserver;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelsCache;
 use App\Infrastructure\Repository\Postgress\Telegram\TelegramChannels\TelegramChannelsRepository;
+use App\Infrastructure\Telegram\Nutgram\NutgramMessageSender;
 use App\Models\TelegramChannel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public array $bindings = [
         TelegramChannelsRepositoryInterface::class => TelegramChannelsRepository::class,
         TelegramChannelsCacheInterface::class => TelegramChannelsCache::class,
+        TelegramMessageSenderInterface::class => NutgramMessageSender::class,
     ];
 
     /**

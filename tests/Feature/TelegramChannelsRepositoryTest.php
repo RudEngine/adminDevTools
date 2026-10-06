@@ -96,6 +96,23 @@ class TelegramChannelsRepositoryTest extends TestCase
         $this->assertSame(TelegramEventTypeEnum::MESSAGE_REACTION, $found->telegramEventType);
     }
 
+    public function test_find_by_id(): void
+    {
+        $saved = $this->repository()->save($this->entity());
+
+        $found = $this->repository()->findById((int) $saved->id);
+
+        $this->assertNotNull($found);
+        $this->assertSame($saved->id, $found->id);
+        $this->assertSame(self::CHAT_ID, $found->chatId);
+        $this->assertSame('Посоны на апщении', $found->chatName);
+    }
+
+    public function test_find_by_id_returns_null_for_unknown_id(): void
+    {
+        $this->assertNull($this->repository()->findById(404));
+    }
+
     public function test_use_case_persists_channel(): void
     {
         $response = app(HandleWebhookUseCase::class)->execute(new HandleWebhookInput(
