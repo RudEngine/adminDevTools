@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Domain\Telegram\Cache\TelegramChannelsCacheInterface;
 use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
+use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelCacheObserver;
+use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelsCache;
 use App\Infrastructure\Repository\Postgress\Telegram\TelegramChannels\TelegramChannelsRepository;
+use App\Models\TelegramChannel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -15,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public array $bindings = [
         TelegramChannelsRepositoryInterface::class => TelegramChannelsRepository::class,
+        TelegramChannelsCacheInterface::class => TelegramChannelsCache::class,
     ];
 
     /**
@@ -31,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->enforceMoonShineOnlyAuth();
+
+        // Модель про кэш не знает — связываем их здесь, как и остальные реализации портов.
+        TelegramChannel::observe(TelegramChannelCacheObserver::class);
     }
 
     /**

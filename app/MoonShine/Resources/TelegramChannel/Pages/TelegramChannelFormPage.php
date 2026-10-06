@@ -38,7 +38,7 @@ final class TelegramChannelFormPage extends FormPage
 
                 Text::make('Название', 'chat_name')->required(),
 
-                Enum::make('Последнее событие', 'last_event_type')
+                Enum::make('Первое событие', 'last_event_type')
                     ->attach(TelegramEventTypeEnum::class)
                     ->required(),
 
