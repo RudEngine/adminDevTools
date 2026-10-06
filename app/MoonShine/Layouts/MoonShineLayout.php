@@ -6,6 +6,7 @@ namespace App\MoonShine\Layouts;
 
 use App\MoonShine\Resources\MoonShineUser\MoonShineUserResource;
 use App\MoonShine\Resources\MoonShineUserRole\MoonShineUserRoleResource;
+use App\MoonShine\Resources\RedisKey\RedisKeyResource;
 use App\MoonShine\Resources\TelegramChannel\TelegramChannelResource;
 use MoonShine\Laravel\Layouts\AppLayout;
 use MoonShine\ColorManager\Palettes\PurplePalette;
@@ -35,6 +36,10 @@ final class MoonShineLayout extends AppLayout
             MenuGroup::make('Телеграм', [
                 MenuItem::make(TelegramChannelResource::class),
             ], 'paper-airplane'),
+
+            MenuGroup::make('DevTools', [
+                MenuItem::make(RedisKeyResource::class),
+            ], 'wrench-screwdriver'),
 
             MenuGroup::make(static fn (): string => __('moonshine::ui.resource.system'), [
                 MenuItem::make(MoonShineUserResource::class),

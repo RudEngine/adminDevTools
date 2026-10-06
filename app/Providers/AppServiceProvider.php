@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Domain\DevTools\Redis\RedisKeyBrowserInterface;
 use App\Domain\Telegram\Cache\TelegramChannelsCacheInterface;
 use App\Domain\Telegram\Gateway\TelegramMessageSenderInterface;
 use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelCacheObserver;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelsCache;
+use App\Infrastructure\Redis\DevTools\PhpRedisKeyBrowser;
 use App\Infrastructure\Repository\Postgress\Telegram\TelegramChannels\TelegramChannelsRepository;
 use App\Infrastructure\Telegram\Nutgram\NutgramMessageSender;
 use App\Models\TelegramChannel;
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         TelegramChannelsRepositoryInterface::class => TelegramChannelsRepository::class,
         TelegramChannelsCacheInterface::class => TelegramChannelsCache::class,
         TelegramMessageSenderInterface::class => NutgramMessageSender::class,
+        RedisKeyBrowserInterface::class => PhpRedisKeyBrowser::class,
     ];
 
     /**
