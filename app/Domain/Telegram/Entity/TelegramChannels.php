@@ -5,7 +5,7 @@ namespace App\Domain\Telegram\Entity;
 
 use App\Domain\Enum\TelegramEventTypeEnum;
 
-class TelegramChannels
+readonly class TelegramChannels
 {
     public function __construct(
         public TelegramEventTypeEnum $telegramEventType,
@@ -17,5 +17,18 @@ class TelegramChannels
     public function isStored(): bool
     {
         return $this->id !== null;
+    }
+
+    /**
+     * Совпадает ли то, что вебхук вообще способен перезаписать.
+     *
+     * Тип события сюда не входит: он фиксируется при создании записи и описывает повод,
+     * по которому канал впервые попал в базу. Запись нужна как свидетельство, что чат
+     * существует, и новое событие другого типа этого свидетельства не меняет.
+     */
+    public function hasSameStateAs(self $other): bool
+    {
+        return $this->chatId === $other->chatId
+            && $this->chatName === $other->chatName;
     }
 }

@@ -13,13 +13,16 @@ class TelegramChannelsRepository implements TelegramChannelsRepositoryInterface
     {
         // chat_id уникален: от одного канала вебхук приходит много раз,
         // поэтому вставка превращается в обновление уже известного канала.
-        $model = TelegramChannel::query()->updateOrCreate(
-            ['chat_id' => $channel->chatId],
-            [
-                'chat_name' => $channel->chatName,
-                'last_event_type' => $channel->telegramEventType,
-            ],
-        );
+        $model = TelegramChannel::query()->firstOrNew(['chat_id' => $channel->chatId]);
+
+        // Тип события — повод, по которому канал попал в базу, а не его текущее
+        // состояние: у существующей строки он остаётся тем, с которым она создана.
+        if (!$model->exists) {
+            $model->last_event_type = $channel->telegramEventType;
+        }
+
+        $model->chat_name = $channel->chatName;
+        $model->save();
 
         return $this->toEntity($model);
     }

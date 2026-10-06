@@ -3,6 +3,7 @@ networks:
 
 volumes:
     pgdata:
+    redisdata:
 
 services:
 
@@ -40,6 +41,30 @@ services:
         networks:
             - laravel
 
+    redis:
+        image: redis:8-alpine
+        container_name: redis
+        restart: unless-stopped
+        command:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --requirepass
+            - "${REDIS_PASSWORD}"
+        ports:
+            - "6379:6379"
+        volumes:
+            - redisdata:/data
+        healthcheck:
+            test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        environment:
+            REDIS_PASSWORD: "${REDIS_PASSWORD}"
+        networks:
+            - laravel
+
     php:
         build:
             context: .
@@ -47,9 +72,40 @@ services:
         container_name: php
         volumes:
             - ./:/var/www
+            - ./dockerConfigs/php/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
         working_dir: /var/www
         ports:
             - "9000:9000"
+        environment:
+            PHP_IDE_CONFIG: "serverName=localhost"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        depends_on:
+            redis:
+                condition: service_healthy
+        networks:
+            - laravel
+
+    queue:
+        build:
+            context: .
+            dockerfile: php.DockerFile
+        container_name: queue
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./dockerConfigs/php/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
+        working_dir: /var/www
+        command: ["php", "/var/www/artisan", "queue:work", "--tries=3", "--timeout=90", "--sleep=1"]
+        environment:
+            PHP_IDE_CONFIG: "serverName=localhost"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        depends_on:
+            database:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         networks:
             - laravel
 
@@ -71,8 +127,15 @@ services:
         container_name: artisan
         volumes:
             - ./:/var/www
+            - ./dockerConfigs/php/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
+        environment:
+            PHP_IDE_CONFIG: "serverName=localhost"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         depends_on:
             database:
+                condition: service_healthy
+            redis:
                 condition: service_healthy
         working_dir: /var/www
         entrypoint: ['php', '/var/www/artisan']

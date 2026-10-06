@@ -34,7 +34,7 @@ final class TelegramChannelIndexPage extends IndexPage
 
             Text::make('Название', 'chat_name')->sortable(),
 
-            Enum::make('Последнее событие', 'last_event_type')
+            Enum::make('Первое событие', 'last_event_type')
                 ->attach(TelegramEventTypeEnum::class)
                 ->badge(Color::PURPLE),
 
@@ -49,7 +49,7 @@ final class TelegramChannelIndexPage extends IndexPage
         return [
             Text::make('Название', 'chat_name'),
 
-            Enum::make('Последнее событие', 'last_event_type')
+            Enum::make('Первое событие', 'last_event_type')
                 ->attach(TelegramEventTypeEnum::class),
         ];
     }

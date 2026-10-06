@@ -22,10 +22,12 @@ class TelegramChannelsRepositoryTest extends TestCase
         return app(TelegramChannelsRepositoryInterface::class);
     }
 
-    private function entity(string $chatName = 'Посоны на апщении'): TelegramChannels
-    {
+    private function entity(
+        string $chatName = 'Посоны на апщении',
+        TelegramEventTypeEnum $eventType = TelegramEventTypeEnum::MESSAGE_REACTION,
+    ): TelegramChannels {
         return new TelegramChannels(
-            telegramEventType: TelegramEventTypeEnum::MESSAGE_REACTION,
+            telegramEventType: $eventType,
             chatId: self::CHAT_ID,
             chatName: $chatName,
         );
@@ -59,6 +61,26 @@ class TelegramChannelsRepositoryTest extends TestCase
         $this->assertSame($first->id, $second->id);
         $this->assertDatabaseCount('telegram_channels', 1);
         $this->assertDatabaseHas('telegram_channels', ['chat_name' => 'Переименованный чат']);
+    }
+
+    /**
+     * Тип события описывает не канал, а повод, по которому он впервые попал в базу,
+     * и перезаписывать его последующими событиями незачем.
+     */
+    public function test_save_keeps_event_type_of_the_first_save(): void
+    {
+        $this->repository()->save($this->entity());
+
+        $updated = $this->repository()->save(
+            $this->entity('Переименованный чат', TelegramEventTypeEnum::CHANNEL_POST),
+        );
+
+        $this->assertSame(TelegramEventTypeEnum::MESSAGE_REACTION, $updated->telegramEventType);
+        $this->assertDatabaseHas('telegram_channels', [
+            'chat_id' => self::CHAT_ID,
+            'chat_name' => 'Переименованный чат',
+            'last_event_type' => TelegramEventTypeEnum::MESSAGE_REACTION->value,
+        ]);
     }
 
     public function test_find_by_chat_id(): void
