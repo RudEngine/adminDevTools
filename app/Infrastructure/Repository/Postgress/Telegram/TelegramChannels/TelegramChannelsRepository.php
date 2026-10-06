@@ -36,6 +36,13 @@ class TelegramChannelsRepository implements TelegramChannelsRepositoryInterface
         return $model === null ? null : $this->toEntity($model);
     }
 
+    public function findById(int $id): ?TelegramChannels
+    {
+        $model = TelegramChannel::query()->find($id);
+
+        return $model === null ? null : $this->toEntity($model);
+    }
+
     private function toEntity(TelegramChannel $model): TelegramChannels
     {
         return new TelegramChannels(

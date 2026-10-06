@@ -10,6 +10,7 @@ use MoonShine\Laravel\DependencyInjection\MoonShine;
 use MoonShine\Laravel\DependencyInjection\MoonShineConfigurator;
 use App\MoonShine\Resources\MoonShineUser\MoonShineUserResource;
 use App\MoonShine\Resources\MoonShineUserRole\MoonShineUserRoleResource;
+use App\MoonShine\Resources\RedisKey\RedisKeyResource;
 use App\MoonShine\Resources\TelegramChannel\TelegramChannelResource;
 
 class MoonShineServiceProvider extends ServiceProvider
@@ -24,6 +25,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 MoonShineUserResource::class,
                 MoonShineUserRoleResource::class,
                 TelegramChannelResource::class,
+                RedisKeyResource::class,
             ])
             ->pages([
                 ...$core->getConfig()->getPages(),
