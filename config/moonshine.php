@@ -45,6 +45,7 @@ return [
     // Routing
     // По умолчанию админка живёт на основном домене (app.domain), на api-домене — 404.
     'domain' => env('MOONSHINE_DOMAIN', env('APP_DOMAIN', 'example.com')),
+    // При смене префикса поправить path в Caddyfile — иначе админка останется без basic auth.
     'prefix' => env('MOONSHINE_ROUTE_PREFIX', 'admin'),
     'page_prefix' => env('MOONSHINE_PAGE_PREFIX', 'page'),
     'resource_prefix' => env('MOONSHINE_RESOURCE_PREFIX', 'resource'),

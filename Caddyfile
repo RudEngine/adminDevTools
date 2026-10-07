@@ -1,0 +1,43 @@
+{
+	admin off
+	persist_config off
+	auto_https off
+
+	{$CADDY_GLOBAL_OPTIONS}
+
+	log {
+		format json
+		output stderr
+		level WARN
+	}
+
+	frankenphp {
+		{$FRANKENPHP_CONFIG}
+	}
+}
+
+{$CADDY_EXTRA_CONFIG}
+
+:{$PORT:80} {
+	root * /app/public
+	encode zstd br gzip
+
+	# Basic auth перед админкой: без пароля 401 ещё до запуска PHP.
+	# Путь должен совпадать с moonshine.prefix (MOONSHINE_ROUTE_PREFIX).
+	@admin {
+		host {$APP_DOMAIN}
+		path /admin /admin/*
+	}
+	basic_auth @admin {
+		{$ADMIN_BASIC_USER} {$ADMIN_BASIC_HASH}
+	}
+
+	file_server {
+		hide .git
+		hide .env*
+	}
+
+	{$CADDY_SERVER_EXTRA_DIRECTIVES}
+
+	php_server
+}
