@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Встроенный маршрут storage/{path} нельзя привязать к домену,
+            // а подписанные ссылки на приватные файлы не используются.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
