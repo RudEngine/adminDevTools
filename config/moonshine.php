@@ -43,7 +43,8 @@ return [
     'use_profile' => true,
 
     // Routing
-    'domain' => env('MOONSHINE_DOMAIN'),
+    // По умолчанию админка живёт на основном домене (app.domain), на api-домене — 404.
+    'domain' => env('MOONSHINE_DOMAIN', env('APP_DOMAIN', 'example.com')),
     'prefix' => env('MOONSHINE_ROUTE_PREFIX', 'admin'),
     'page_prefix' => env('MOONSHINE_PAGE_PREFIX', 'page'),
     'resource_prefix' => env('MOONSHINE_RESOURCE_PREFIX', 'resource'),

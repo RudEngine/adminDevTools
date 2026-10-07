@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ForceJsonOnApiDomain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -9,23 +10,27 @@ use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
+        // /up без домена: healthcheck может ходить по IP контейнера.
         health: '/up',
         then: function (): void {
-            // API регистрируем вручную: на поддомене app.api_domain и без префикса "api",
-            // то есть api.example.com/hello вместо example.com/api/hello.
-            $api = Route::middleware('api');
+            // Один контейнер, два домена — разделяем роутингом.
+            // Web — на app.domain, API — на app.api_domain без префикса "api"
+            // (api.example.com/hello вместо example.com/api/hello).
+            // Только config(), не env(): после config:cache env() вернёт null,
+            // а Route::domain(null) молча матчит любой хост.
+            Route::middleware('web')
+                ->domain(config('app.domain'))
+                ->group(base_path('routes/web.php'));
 
-            if ($domain = config('app.api_domain')) {
-                $api->domain($domain);
-            }
-
-            $api->group(base_path('routes/api.php'));
+            Route::middleware('api')
+                ->domain(config('app.api_domain'))
+                ->group(base_path('routes/api.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+        $middleware->prepend(ForceJsonOnApiDomain::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);
