@@ -23,8 +23,9 @@ class WebhookTGController extends Controller
 
             // Полный апдейт несёт текст сообщения, имя и username автора. В прод-логи
             // и в breadcrumbs Sentry это не отправляем — только когда отладка включена руками.
+            Log::info('conf: ', (string) config('app.debug'));
             if (config('app.debug')) {
-                Log::debug('Полный апдейт телеграмм', $payload);
+                Log::info('Полный апдейт телеграмм', $payload);
             }
 
             $input = app(HandleWebhookResolver::class)->resolve($request);
