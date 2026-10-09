@@ -13,8 +13,11 @@ use App\Domain\Telegram\Gateway\TelegramMessageSenderInterface;
  */
 final class FakeTelegramMessageSender implements TelegramMessageSenderInterface
 {
-    /** @var list<array{chatId: int, text: string}> */
+    /** @var list<array{chatId: int, text: string, replyTo: int|null}> */
     public array $sent = [];
+
+    /** @var list<array{chatId: int, messageId: int, text: string}> */
+    public array $edited = [];
 
     public function __construct(
         private readonly int $messageId = 1,
@@ -22,14 +25,19 @@ final class FakeTelegramMessageSender implements TelegramMessageSenderInterface
     ) {
     }
 
-    public function send(int $chatId, string $text): int
+    public function send(int $chatId, string $text, ?int $replyToMessageId = null): int
     {
         if ($this->failWith !== null) {
             throw new TelegramMessageNotSentException($this->failWith);
         }
 
-        $this->sent[] = ['chatId' => $chatId, 'text' => $text];
+        $this->sent[] = ['chatId' => $chatId, 'text' => $text, 'replyTo' => $replyToMessageId];
 
         return $this->messageId;
+    }
+
+    public function edit(int $chatId, int $messageId, string $text): void
+    {
+        $this->edited[] = ['chatId' => $chatId, 'messageId' => $messageId, 'text' => $text];
     }
 }

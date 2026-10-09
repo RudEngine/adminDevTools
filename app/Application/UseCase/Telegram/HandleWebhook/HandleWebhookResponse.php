@@ -8,7 +8,8 @@ readonly class HandleWebhookResponse
     public function __construct(
         public int    $channelId,
         public int    $chatId,
-        public string $chatName
+        public string $chatName,
+        public bool   $mentionQueued = false
     ) {
     }
 }

@@ -65,6 +65,39 @@ services:
         networks:
             - laravel
 
+    # llama.cpp в режиме роутера: подхватывает все *.gguf из dockerConfigs/models,
+    # модель выбирается полем "model" в запросе (имя файла без .gguf).
+    # Параметры моделей (контекст, потоки, thinking) — dockerConfigs/llama/models.ini.
+    # OpenAI-совместимый API: http://localhost:${LLAMA_PORT}/v1/chat/completions,
+    # из docker-сети — http://llama:8080.
+    llama:
+        image: ghcr.io/ggml-org/llama.cpp:server
+        container_name: llama
+        restart: unless-stopped
+        command:
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+            - --models-dir
+            - /models
+            - --models-max
+            - "${LLAMA_MODELS_MAX:-1}"
+            - --models-preset
+            - /config/models.ini
+        ports:
+            - "${LLAMA_PORT:-8080}:8080"
+        volumes:
+            - ./dockerConfigs/models:/models:ro
+            - ./dockerConfigs/llama/models.ini:/config/models.ini:ro
+        healthcheck:
+            test: ["CMD", "curl", "-fs", "http://localhost:8080/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+        networks:
+            - laravel
+
     php:
         build:
             context: .

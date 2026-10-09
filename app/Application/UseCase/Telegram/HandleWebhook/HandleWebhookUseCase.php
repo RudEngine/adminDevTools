@@ -5,13 +5,15 @@ namespace App\Application\UseCase\Telegram\HandleWebhook;
 
 use App\Domain\Telegram\Cache\TelegramChannelsCacheInterface;
 use App\Domain\Telegram\Entity\TelegramChannels;
+use App\Domain\Telegram\Queue\BotMentionQueueInterface;
 use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
 
 final readonly class HandleWebhookUseCase
 {
     public function __construct(
         private TelegramChannelsRepositoryInterface $telegramChannelsRepository,
-        private TelegramChannelsCacheInterface $telegramChannelsCache
+        private TelegramChannelsCacheInterface $telegramChannelsCache,
+        private BotMentionQueueInterface $botMentionQueue
     ) {
     }
 
@@ -23,10 +25,16 @@ final readonly class HandleWebhookUseCase
             chatName: $input->chatName
         ));
 
+        // Отвечает на упоминание очередь: запрос к LLM не должен держать вебхук.
+        if ($input->mention !== null) {
+            $this->botMentionQueue->push($input->mention);
+        }
+
         return new HandleWebhookResponse(
             channelId: (int) $channel->id,
             chatId: $channel->chatId,
             chatName: $channel->chatName,
+            mentionQueued: $input->mention !== null,
         );
     }
 

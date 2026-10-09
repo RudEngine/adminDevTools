@@ -37,6 +37,7 @@ class WebhookTGController extends Controller
                 'channel_id' => $result->channelId,
                 'chat_id' => $result->chatId,
                 'event_type' => $input->telegramEventType->value,
+                'mention_queued' => $result->mentionQueued,
             ]);
         } catch (UnsupportedTelegramEventException $e) {
             Log::info('Пропустили обновление телеграмм: ' . $e->getMessage());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Telegram;
 
+use App\Domain\Telegram\Exception\TelegramMessageNotEditedException;
 use App\Domain\Telegram\Exception\TelegramMessageNotSentException;
 use App\Infrastructure\Telegram\Nutgram\NutgramMessageSender;
 use GuzzleHttp\Psr7\Response;
@@ -44,5 +45,49 @@ class NutgramMessageSenderTest extends TestCase
         $this->expectExceptionMessageMatches('/chat not found/');
 
         (new NutgramMessageSender($bot))->send(self::CHAT_ID, 'Привет');
+    }
+
+    public function test_reply_is_sent_with_reply_parameters(): void
+    {
+        $bot = Nutgram::fake();
+        $bot->willReceive(['message_id' => 100, 'date' => 0, 'chat' => ['id' => self::CHAT_ID, 'type' => 'supergroup']]);
+
+        (new NutgramMessageSender($bot))->send(self::CHAT_ID, 'Печатает…', replyToMessageId: 8290);
+
+        $bot->assertReplyMessage([
+            'chat_id' => self::CHAT_ID,
+            'text' => 'Печатает…',
+            'reply_parameters' => ['message_id' => 8290, 'allow_sending_without_reply' => true],
+        ]);
+    }
+
+    public function test_edits_message_text(): void
+    {
+        $bot = Nutgram::fake();
+        $bot->willReceive(['message_id' => 100, 'date' => 0, 'chat' => ['id' => self::CHAT_ID, 'type' => 'supergroup']]);
+
+        (new NutgramMessageSender($bot))->edit(self::CHAT_ID, 100, 'Четыре');
+
+        $bot->assertCalled('editMessageText');
+        $bot->assertReplyMessage([
+            'chat_id' => self::CHAT_ID,
+            'message_id' => 100,
+            'text' => 'Четыре',
+        ]);
+    }
+
+    public function test_turns_edit_error_into_domain_exception(): void
+    {
+        $bot = Nutgram::fake(responses: [
+            new Response(400, [], json_encode([
+                'ok' => false,
+                'description' => 'Bad Request: message to edit not found',
+            ], JSON_THROW_ON_ERROR)),
+        ]);
+
+        $this->expectException(TelegramMessageNotEditedException::class);
+        $this->expectExceptionMessageMatches('/message to edit not found/');
+
+        (new NutgramMessageSender($bot))->edit(self::CHAT_ID, 100, 'Четыре');
     }
 }

@@ -15,4 +15,27 @@ return [
         // но TTL гарантирует сходимость, если строку изменили в обход приложения.
         'ttl' => (int) env('TELEGRAM_CHANNEL_CACHE_TTL', 86400),
     ],
+
+    /*
+     * Ответы на упоминания бота: сообщение с @username бота уходит в очередь,
+     * задача отвечает заглушкой, спрашивает LLM и заменяет заглушку ответом.
+     */
+    'mention' => [
+        // Username бота без @. Пусто — упоминания не ищем, бот молчит.
+        'bot_username' => env('TELEGRAM_BOT_USERNAME'),
+
+        'typing_text' => '✍️ Печатает…',
+
+        // Чем заменить заглушку, если LLM не ответила.
+        'error_text' => 'Не получилось ответить, попробуйте ещё раз позже.',
+
+        // Секунды на ответ LLM. Должно быть меньше таймаута задачи
+        // (AnswerBotMentionJob::$timeout), а тот — меньше retry_after очереди.
+        'timeout' => (int) env('TELEGRAM_MENTION_LLM_TIMEOUT', 60),
+
+        'instructions' => env(
+            'TELEGRAM_MENTION_INSTRUCTIONS',
+            'Ты — бот в групповом чате Telegram. Отвечай по-русски, коротко и по делу, обычным текстом без Markdown.'
+        ),
+    ],
 ];

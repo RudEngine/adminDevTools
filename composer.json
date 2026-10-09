@@ -8,6 +8,7 @@
         "php": "^8.4",
         "ext-pdo_pgsql": "*",
         "ext-redis": "*",
+        "laravel/ai": "^1.2",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "moonshine/moonshine": "^4.19",

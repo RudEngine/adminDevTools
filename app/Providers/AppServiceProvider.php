@@ -2,12 +2,16 @@
 
 namespace App\Providers;
 
+use App\Domain\Ai\Gateway\ChatAssistantInterface;
 use App\Domain\DevTools\Redis\RedisKeyBrowserInterface;
 use App\Domain\Telegram\Cache\TelegramChannelsCacheInterface;
 use App\Domain\Telegram\Gateway\TelegramMessageSenderInterface;
+use App\Domain\Telegram\Queue\BotMentionQueueInterface;
 use App\Domain\Telegram\Repository\TelegramChannelsRepositoryInterface;
+use App\Infrastructure\Ai\LaravelAi\LaravelAiChatAssistant;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelCacheObserver;
 use App\Infrastructure\Cache\Redis\Telegram\TelegramChannels\TelegramChannelsCache;
+use App\Infrastructure\Queue\Telegram\LaravelBotMentionQueue;
 use App\Infrastructure\Redis\DevTools\PhpRedisKeyBrowser;
 use App\Infrastructure\Repository\Postgress\Telegram\TelegramChannels\TelegramChannelsRepository;
 use App\Infrastructure\Telegram\Nutgram\NutgramMessageSender;
@@ -26,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         TelegramChannelsCacheInterface::class => TelegramChannelsCache::class,
         TelegramMessageSenderInterface::class => NutgramMessageSender::class,
         RedisKeyBrowserInterface::class => PhpRedisKeyBrowser::class,
+        BotMentionQueueInterface::class => LaravelBotMentionQueue::class,
+        ChatAssistantInterface::class => LaravelAiChatAssistant::class,
     ];
 
     /**

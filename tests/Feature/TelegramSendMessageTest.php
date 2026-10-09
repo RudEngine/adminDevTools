@@ -95,7 +95,7 @@ class TelegramSendMessageTest extends TestCase
             ]);
 
         $this->assertSame(
-            [['chatId' => self::CHAT_ID, 'text' => 'Привет, посоны']],
+            [['chatId' => self::CHAT_ID, 'text' => 'Привет, посоны', 'replyTo' => null]],
             $sender->sent
         );
     }

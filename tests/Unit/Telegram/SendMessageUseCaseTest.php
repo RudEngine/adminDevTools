@@ -36,7 +36,7 @@ class SendMessageUseCaseTest extends TestCase
             ->execute(new SendMessageInput(channelId: 7, text: 'Привет, посоны'));
 
         $this->assertSame(
-            [['chatId' => -1003807797608, 'text' => 'Привет, посоны']],
+            [['chatId' => -1003807797608, 'text' => 'Привет, посоны', 'replyTo' => null]],
             $sender->sent
         );
         $this->assertSame(42, $response->messageId);
